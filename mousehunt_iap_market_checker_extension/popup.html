@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MouseHunt IAP Checker</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 15px;
+      width: 250px;
+    }
+
+    h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    select {
+      width: 100%;
+      padding: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 8px;
+      margin-top: 15px;
+      background: #2e89ff;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #1b6ce5;
+    }
+
+    #statusMsg {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #2e89ff;
+    }
+  </style>
+</head>
+<body>
+  <h3>🐭 MouseHunt IAP Checker</h3>
+
+  <label for="storeCurrency">Store Currency</label>
+  <select id="storeCurrency">
+  </select>
+
+  <label for="localCurrency">Local Currency</label>
+  <select id="localCurrency">
+  </select>
+
+  <button id="toggleOverlayBtn">Toggle Widget</button>
+
+  <div id="statusMsg"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

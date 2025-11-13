@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "interactjs": "^1.10.27",
+    "money": "^0.2.0",
+    "tabulator-tables": "^6.3.1"
+  }
+}

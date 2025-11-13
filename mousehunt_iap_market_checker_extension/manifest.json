@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "MouseHunt IAP Market Checker",
+  "version": "2.0.0",
+  "description": "Fetch MouseHunt IAP rewards and compare their market values with live MarketHunt data.",
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://www.mousehuntgame.com/*",
+    "https://api.markethunt.win/*",
+    "https://api.exchangerate-api.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://www.mousehuntgame.com/*"],
+      "js": [
+        "node_modules/interactjs/dist/interact.min.js",
+        "libs/tabulator.min.js",
+        "libs/money.min.js",
+        "content.js"
+      ],
+      "css": [
+        "libs/tabulator.min.css",
+        "styles.css"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "MouseHunt Market Checker"
+  },
+  "homepage_url": "https://github.com/your-repo",
+  "author": "Your Name"
+}
