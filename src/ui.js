@@ -1,8 +1,10 @@
 "use strict";
 (function(){
-  function createOverlay(){
+  // Create widget layout
+  function createWidget(){
     const el = document.createElement("div");
     el.id = "mhMarketOverlay";
+
     el.innerHTML = `
       <div class="header">
         <h3>MouseHunt Market Checker</h3>
@@ -12,13 +14,18 @@
       <button id="mhFetchBtn">Fetch Market Data</button>
       <div id="mhProgress"><div></div></div>
       <div id="mhResults"><p>No data yet.</p></div>`;
+
     document.body.appendChild(el);
+
+    // Close button
     el.querySelector("#mhCloseBtn").addEventListener("click", () => {
       el.style.visibility = "hidden"; el.style.pointerEvents = "none";
     });
+
     return el;
   }
 
+  // Setup drag and resize interactions for widget
   function setupInteract(overlay){
     interact("#mhMarketOverlay")
       .draggable({
@@ -60,10 +67,14 @@
     return overlay;
   }
 
+  // Render IAPs result in table
   function renderTable(results, LOCAL_CURRENCY){
     const resultsDiv = document.querySelector("#mhResults");
     resultsDiv.innerHTML = "";
+
     if (!results.length){ resultsDiv.innerHTML = "<p>No market data found.</p>"; return; }
+
+    // IAPs data
     const tableData = results.map(r => ({
       name: r.name,
       item: r.item_name,
@@ -72,6 +83,8 @@
       goldTotal: r.goldTotal,
       goldPerCost: r.goldPerCost
     }));
+
+    // Tabulator table
     new Tabulator(resultsDiv, {
       data: tableData,
       layout: "fitColumns",
@@ -92,5 +105,5 @@
   }
 
   window.mhMarketChecker = window.mhMarketChecker || {};
-  Object.assign(window.mhMarketChecker, { createOverlay, setupInteract, renderTable });
+  Object.assign(window.mhMarketChecker, { createWidget, setupInteract, renderTable });
 })();

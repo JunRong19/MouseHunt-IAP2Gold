@@ -1,10 +1,19 @@
 "use strict";
 (function(){
   if (window.hasRunMHMarketChecker) return; window.hasRunMHMarketChecker = true;
-  const { createOverlay, setupInteract, renderTable, ensureRates, fetchIAPs, parseIAPs, fetchMarketPrice } = window.mhMarketChecker;
+  const { createWidget, setupInteract, renderTable, setDailyRates, fetchIAPs, parseIAPs, fetchMarketPrice } = window.mhMarketChecker;
+  
+  const WORKERS_LIMIT = 8;
 
-  const overlay = setupInteract(createOverlay());
+  // Draw widget
+  const overlay = setupInteract(createWidget());
 
+  // Get widget elements
+  const fetchBtn = overlay.querySelector("#mhFetchBtn");
+  const progressBar = overlay.querySelector("#mhProgress div");
+  const lastFetch = overlay.querySelector("#mhLastFetch");
+
+  // Listen for toggling visibility button click
   chrome.runtime.onMessage.addListener((msg) => {
     if (msg.action !== "toggleOverlay" || !overlay) return;
     const hidden = overlay.style.visibility === "hidden";
@@ -12,9 +21,35 @@
     overlay.style.pointerEvents = hidden ? "auto" : "none";
   });
 
-  const fetchBtn = overlay.querySelector("#mhFetchBtn");
-  const progressBar = overlay.querySelector("#mhProgress div");
-  const lastFetch = overlay.querySelector("#mhLastFetch");
+  // Listen for fetch button click
+  fetchBtn.addEventListener("click", async () => {
+    // Disable button
+    fetchBtn.disabled = true; fetchBtn.textContent = "Fetching...";
+
+    // Get daily exchange rates
+    await setDailyRates();
+
+    // Get all IAPs in premium store
+    const rewards = await fetchIAPs();
+    const iaps = parseIAPs(rewards);
+
+    // Fetch market prices of IAPs
+    const tasks = iaps.map(i => () => fetchMarketPrice(i));
+    const results = (await runWithConcurrency(tasks, WORKERS_LIMIT, p => {
+      progressBar.style.width = (p * 100).toFixed(1) + "%";
+    })).filter(Boolean);
+    results.sort((a,b) => b.goldPerCost - a.goldPerCost);
+
+    // Display IAPs in table
+    const { LOCAL_CURRENCY } = window.mhMarketChecker;
+    renderTable(results, LOCAL_CURRENCY);
+
+    // Re-enable button
+    fetchBtn.textContent = "Fetch Market Data"; fetchBtn.disabled = false;
+
+    // Show last fetch time
+    lastFetch.textContent = "Last Fetch: " + new Date().toLocaleTimeString();
+  });
 
   async function runWithConcurrency(tasks, limit, onProgress){
     const results = []; let index = 0; let done = 0;
@@ -27,21 +62,6 @@
     }
     const workers = Array.from({ length: Math.min(limit, tasks.length) }, () => worker());
     await Promise.all(workers); return results;
-  }
-
-  fetchBtn.addEventListener("click", async () => {
-    const { LOCAL_CURRENCY } = window.mhMarketChecker;
-    fetchBtn.disabled = true; fetchBtn.textContent = "Fetching...";
-    await ensureRates();
-    const rewards = await fetchIAPs();
-    const iaps = parseIAPs(rewards);
-    const tasks = iaps.map(i => () => fetchMarketPrice(i));
-    const results = (await runWithConcurrency(tasks, 8, p => {
-      progressBar.style.width = (p * 100).toFixed(1) + "%";
-    })).filter(Boolean);
-    results.sort((a,b) => b.goldPerCost - a.goldPerCost);
-    renderTable(results, LOCAL_CURRENCY);
-    fetchBtn.textContent = "Fetch Market Data"; fetchBtn.disabled = false;
-    lastFetch.textContent = "Last Fetch: " + new Date().toLocaleTimeString();
-  });
+}
 })();
+
