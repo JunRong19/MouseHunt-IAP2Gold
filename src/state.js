@@ -2,8 +2,7 @@
 (function(){
   const state = {
     LOCAL_CURRENCY: "SGD",
-    STORE_CURRENCY: "USD",
-    singularize(name){ return name.endsWith("s") ? name.slice(0,-1) : name; }
+    STORE_CURRENCY: "USD"
   };
 
   chrome.storage.local.get({ LOCAL_CURRENCY: "SGD", STORE_CURRENCY: "USD" }, (r) => {

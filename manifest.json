@@ -17,7 +17,7 @@
     {
       "matches": ["https://www.mousehuntgame.com/*"],
       "js": [
-        "node_modules/interactjs/dist/interact.min.js",
+        "libs/interact.min.js",
         "libs/tabulator.min.js",
         "libs/money.min.js",
         "state.js",
@@ -26,16 +26,16 @@
         "content.js"
       ],
       "css": [
-        "node_modules/tabulator-tables/dist/css/tabulator_site_dark.min.css",
-        "styles.css"
+        "styles/tabulator_site_dark.min.css",
+        "styles/styles.css"
       ],
       "run_at": "document_end"
     }
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "MouseHunt Market Checker"
+    "default_title": "MouseHunt IAP2Gold"
   },
   "homepage_url": "https://github.com/your-repo",
-  "author": "Your Name"
+  "author": "Tan Jun Rong"
 }

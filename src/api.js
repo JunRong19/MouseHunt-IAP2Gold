@@ -3,6 +3,10 @@
   const EXCHANGE_URL = "https://api.exchangerate-api.com/v4/latest/USD";
   const MARKET_SEARCH_URL = "https://api.markethunt.win/items/search?query=";
 
+  function singularize(name){
+    return name.endsWith("s") ? name.slice(0,-1) : name; 
+  }
+
   async function ensureRates(){
     const { exchangeRates, ratesTimestamp } = await chrome.storage.local.get(["exchangeRates","ratesTimestamp"]);
     const dayMs = 86400000;
@@ -50,7 +54,6 @@
   }
 
   async function fetchMarketPrice(iap){
-    const { singularize, LOCAL_CURRENCY } = window.mhMarketChecker;
     const cleanName = singularize(iap.name).replace(/[|+]/g, "");
     const q = encodeURIComponent(cleanName);
     try {
