@@ -20,10 +20,13 @@
         "node_modules/interactjs/dist/interact.min.js",
         "libs/tabulator.min.js",
         "libs/money.min.js",
+        "state.js",
+        "api.js",
+        "ui.js",
         "content.js"
       ],
       "css": [
-        "libs/tabulator.min.css",
+        "node_modules/tabulator-tables/dist/css/tabulator_site_dark.min.css",
         "styles.css"
       ],
       "run_at": "document_end"

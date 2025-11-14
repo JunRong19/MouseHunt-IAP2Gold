@@ -1,0 +1,368 @@
+/**
+ * MouseHunt IAP Market Checker - Content Script
+ * Fetches MouseHunt IAP rewards and compares their market values using MarketHunt API
+ */
+(async () => {
+  // ============================================================================
+  // INITIALIZATION & GUARDS
+  // ============================================================================
+  if (window.hasRunMHMarketChecker) return;
+  window.hasRunMHMarketChecker = true;
+
+  // ============================================================================
+  // CONSTANTS
+  // ============================================================================
+  const MARKET_SEARCH_URL = "https://api.markethunt.win/items/search?query=";
+  const WORKERS_LIMIT = 8;
+  
+  // ============================================================================
+  // STATE & CONFIGURATION
+  // ============================================================================
+  let LOCAL_CURRENCY = "SGD";
+  let STORE_CURRENCY = "USD";
+
+  chrome.storage.local.get(
+    { LOCAL_CURRENCY: "SGD", STORE_CURRENCY: "USD" },
+    (result) => {
+      LOCAL_CURRENCY = result.LOCAL_CURRENCY;
+      STORE_CURRENCY = result.STORE_CURRENCY;
+    }
+  );
+
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "local") {
+      if (changes.LOCAL_CURRENCY) {
+        LOCAL_CURRENCY = changes.LOCAL_CURRENCY.newValue;
+      }
+      if (changes.STORE_CURRENCY) {
+        STORE_CURRENCY = changes.STORE_CURRENCY.newValue;
+      }
+    }
+  });
+
+  const overlay = document.createElement("div");
+  overlay.id = "mhMarketOverlay";
+  overlay.innerHTML = `
+    <div class="header">
+      <h3>MouseHunt Market Checker</h3>
+      <span id="mhLastFetch">Last Fetch: --</span>
+      <button id="mhCloseBtn">✖</button>
+    </div>
+    <button id="mhFetchBtn">Fetch Market Data</button>
+    <div id="mhProgress"><div></div></div>
+    <div id="mhResults"><p>No data yet.</p></div>
+  `;
+  document.body.appendChild(overlay);
+
+  const closeBtn = overlay.querySelector("#mhCloseBtn");
+  closeBtn.addEventListener("click", () => {
+    overlay.style.visibility = 'hidden';
+    overlay.style.pointerEvents = 'none';
+  });
+
+  chrome.runtime.onMessage.addListener((msg) => {
+    if (msg.action === 'toggleOverlay' && overlay) {
+      const hidden = overlay.style.visibility === 'hidden';
+      overlay.style.visibility = hidden ? 'visible' : 'hidden';
+      overlay.style.pointerEvents = hidden ? 'auto' : 'none';
+    }
+  });
+
+  async function getRatesCached() {
+    const cache = await chrome.storage.local.get(['exchangeRates', 'ratesTimestamp']);
+    const oneDay = 24 * 60 * 60 * 1000;
+    if (cache.exchangeRates && Date.now() - cache.ratesTimestamp < oneDay) {
+      fx.base = 'USD';
+      fx.rates = cache.exchangeRates;
+    } else {
+      const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+      const data = await response.json();
+      fx.base = data.base;
+      fx.rates = data.rates;
+      await chrome.storage.local.set({ exchangeRates: data.rates, ratesTimestamp: Date.now() });
+    }
+  }
+  getRatesCached();
+
+  interact('#mhMarketOverlay')
+    .draggable({
+      inertia: true,
+      allowFrom: '.header',
+      modifiers: [interact.modifiers.restrictRect({ restriction: 'parent', endOnly: true })],
+      listeners: {
+        move(event) {
+          const el = event.target;
+          const x = (parseFloat(el.getAttribute('data-x')) || 0) + event.dx;
+          const y = (parseFloat(el.getAttribute('data-y')) || 0) + event.dy;
+          el.style.transform = `translate(${x}px, ${y}px)`;
+          el.setAttribute('data-x', x);
+          el.setAttribute('data-y', y);
+        },
+        start(event) { event.target.style.userSelect = 'none'; },
+        end(event) { event.target.style.userSelect = ''; }
+      }
+    })
+    .resizable({
+      edges: { left: true, right: true, bottom: true, top: false },
+      modifiers: [
+        interact.modifiers.restrictEdges({ outer: 'parent' }),
+        interact.modifiers.restrictSize({ min: { width: 300, height: 200 } })
+      ],
+      inertia: true
+    })
+    .on('resizestart', () => { document.body.style.userSelect = 'none'; })
+    .on('resizemove', (event) => {
+      const target = event.target;
+      let x = parseFloat(target.getAttribute('data-x')) || 0;
+      let y = parseFloat(target.getAttribute('data-y')) || 0;
+      target.style.width = event.rect.width + 'px';
+      target.style.height = event.rect.height + 'px';
+      x += event.deltaRect.left;
+      y += event.deltaRect.top;
+      target.style.transform = `translate(${x}px, ${y}px)`;
+      target.setAttribute('data-x', x);
+      target.setAttribute('data-y', y);
+    })
+    .on('resizeend', () => { document.body.style.userSelect = ''; });
+
+  const fetchBtn = overlay.querySelector('#mhFetchBtn');
+  const progressBar = overlay.querySelector('#mhProgress div');
+  const resultsDiv = overlay.querySelector('#mhResults');
+
+  async function fetchIAPs() {
+    const response = await fetch("/managers/ajax/donations/rewards.php", {
+      method: "POST",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+      },
+      body: "action=getRewards"
+    });
+    const json = await response.json();
+    return json.checkout?.rewards || [];
+  }
+
+  async function fetchMarketplaceItem(itemId) {
+      const response = await fetch("/managers/ajax/users/marketplace.php", {
+          method: "POST",
+          headers: {
+              "X-Requested-With": "XMLHttpRequest",
+              "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+          },
+          body: `action=get_item_listings&item_id=${itemId}`
+      });
+
+      const json = await response.json();
+      // json.buy and json.sell contain the marketplace listings
+      const marketplaceData = json.marketplace_item_listings?.[itemId] || { buy: [], sell: [] };
+      const marketplaceSumData = json.marketplace_item_sum_listings?.[itemId] || { buy: [], sell: [] };
+
+      return {
+          buy: marketplaceData.buy,
+          sell: marketplaceData.sell,
+          buy_limit: marketplaceSumData.buy,
+          sell_limit: marketplaceSumData.sell,
+          itemId: itemId
+      };
+  }
+
+function parseIAPs(rewards) {
+  return rewards.map(item => {
+    const fullName = item.name;
+    const match = fullName.match(/(\d+)\s+(.*)/);
+    const quantity = match ? parseInt(match[1]) : 1;
+    const name = match ? match[2] : fullName;
+
+    // Convert from STORE_CURRENCY to LOCAL_CURRENCY
+    let totalCost =   fx(item.value).from(STORE_CURRENCY).to(LOCAL_CURRENCY);
+
+    const unitCost = totalCost / quantity;
+    return { full_name: fullName, name, quantity, total_cost: totalCost, unit_cost: unitCost };
+  });
+}
+
+  const singularize = (n) => (n.endsWith('s') ? n.slice(0, -1) : n);
+
+  async function fetchMarketPrice(iap) {
+    const cleanName = singularize(iap.name).replace(/[|+]/g, "");
+    const q = encodeURIComponent(cleanName);
+    try {
+      const r = await fetch(`${MARKET_SEARCH_URL}${q}`);
+      const data = await r.json();
+      const match = data.find(x => x.item_info?.name?.toLowerCase() === cleanName.toLowerCase());
+      if (!match) return null;
+
+      const id = match.item_info.item_id;
+      const item = await fetchMarketplaceItem(id);
+
+      let quantity = iap.quantity;
+      let goldTotal = 0;
+
+      // Loop through buy listings and calculate cost
+      item.buy.forEach(listing => {
+          const listingQuantity = listing.quantity;
+          const listingPrice = listing.unit_price; 
+          const purchasableQuantity = Math.min(quantity, listingQuantity);
+          goldTotal += purchasableQuantity * listingPrice;
+          quantity -= purchasableQuantity;
+      });
+
+      goldTotal *= 0.9; // accounting for 10% tariff
+
+      const goldPerCost = Math.round(goldTotal / iap.total_cost);
+      const sellableUnit = iap.quantity - quantity;
+
+      return {
+          name: iap.full_name,
+          item_name: singularize(iap.name),
+          cost: iap.total_cost.toFixed(2),
+          sellableUnit: sellableUnit,
+          goldTotal,
+          goldPerCost
+      };
+
+    } catch (error) {
+        console.error('Error fetching marketplace item:', error);
+        return null;
+    }
+  }
+
+  async function runConcurrent(tasks, limit, onProgress) {
+    const results = [];
+    let index = 0, done = 0;
+    async function worker() {
+      while (index < tasks.length) {
+        const i = index++;
+        results[i] = await tasks[i]().catch(() => null);
+        done++;
+        onProgress(done / tasks.length);
+      }
+    }
+    const workers = Array.from({ length: Math.min(limit, tasks.length) }, worker);
+    await Promise.all(workers);
+    return results;
+  }
+function renderTable(results) {
+    resultsDiv.innerHTML = "";
+
+    if (!results.length) {
+        resultsDiv.innerHTML = "<p>No market data found.</p>";
+        return;
+    }
+
+    const tableData = results.map(r => ({
+        name: r.name,
+        item: r.item_name,
+        cost: r.cost + " " + LOCAL_CURRENCY,
+        sellableUnit: r.sellableUnit,    
+        goldTotal: r.goldTotal,
+        goldPerCost: r.goldPerCost
+    }));
+
+    new Tabulator(resultsDiv, {
+        data: tableData,
+        layout: "fitColumns",
+        reactiveData: true,
+        columns: [
+            {
+                title: "IAP Name",
+                field: "name",
+                hozAlign: "left",
+                headerHozAlign: "left",
+                resizable: false,
+                headerWordWrap: true
+            },
+            { 
+                title: "Item Name", 
+                field: "item",
+                hozAlign: "left",
+                headerHozAlign:"left",
+                resizable: false,
+                headerWordWrap: true,
+                formatter: function(cell){
+                  const text = cell.getValue() ?? "";
+                  const span = document.createElement('span');
+                  span.className = 'mh-copy';
+                  span.textContent = text;
+                  span.title = 'Click to copy';
+                  return span;
+                },
+                cellClick: async function(e, cell){
+                  const text = cell.getValue() ?? "";
+                  try {
+                    await navigator.clipboard.writeText(text);
+                    alert(`Copied! - ${text}`);
+                  } catch(err) {
+                    console.warn('Copy failed:', err);
+                  }
+                }
+            },
+            { 
+                title: "Cost", 
+                field: "cost", 
+                hozAlign: "right",
+                headerHozAlign:"right",
+                resizable: false,
+                headerWordWrap: true
+            },
+            { 
+                title: "Sellable Units", 
+                field: "sellableUnit",
+                hozAlign: "right",
+                headerHozAlign:"right",
+                resizable: false,
+                headerWordWrap: true
+            },
+            { 
+                title: "Total Gold (includes 10% tariff)", 
+                field: "goldTotal", 
+                hozAlign: "right",
+                headerHozAlign:"right",
+                resizable: false,
+                formatter: "money",
+                formatterParams: {
+                    precision: 0,
+                    thousandsSeparator: ","
+                },
+                headerWordWrap: true
+            },
+            { 
+                title: `Gold per ${LOCAL_CURRENCY}`, 
+                field: "goldPerCost", 
+                hozAlign: "right",
+                headerHozAlign:"right",
+                resizable: false,
+                formatter: "money",
+                formatterParams: {
+                    precision: 0,
+                    thousandsSeparator: ","
+                },
+                headerWordWrap: true
+            },
+        ],
+
+        height: "100%",
+    });
+}
+
+  fetchBtn.addEventListener("click", async () => {
+    fetchBtn.disabled = true;
+    fetchBtn.textContent = "Fetching...";
+
+    const rewards = await fetchIAPs();
+    const iaps = parseIAPs(rewards);
+    const tasks = iaps.map(iap => () => fetchMarketPrice(iap));
+    const results = (await runConcurrent(tasks, WORKERS_LIMIT, p => {
+      progressBar.style.width = (p * 100).toFixed(1) + "%";
+    })).filter(Boolean);
+
+    results.sort((a, b) => b.goldPerCost - a.goldPerCost);
+    renderTable(results);
+    fetchBtn.textContent = "Fetch Market Data";
+    fetchBtn.disabled = false;
+
+    document.querySelector("#mhLastFetch").textContent =
+   "Last Fetch: " + new Date().toLocaleTimeString();
+
+  });
+})();

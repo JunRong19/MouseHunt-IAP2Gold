@@ -12,7 +12,7 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
   z-index: 999999;
   font-family: sans-serif;
-  padding: 15px;
+  padding: 0 10px 10px 10px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column; /* allow vertical layout */
@@ -21,8 +21,9 @@
 #mhMarketOverlay .header {
   position: relative;
   text-align: center;
-  margin-bottom: 10px;
-  cursor: move; /* draggable area */
+  padding-bottom: 15px;
+  padding-top: 15px;
+  cursor: move;
 }
 
 #mhMarketOverlay h3 {
@@ -41,9 +42,10 @@
   cursor: pointer;
   line-height: 1;
   padding: 0 6px;
+  top: 15px;     /* same as header padding */
 }
 
-#mhMarketOverlay button:not(#mhCloseBtn) {
+#mhMarketOverlay #mhFetchBtn {
   width: 100%;
   padding: 8px;
   margin-bottom: 10px;
@@ -54,7 +56,9 @@
   cursor: pointer;
 }
 
-#mhMarketOverlay button:not(#mhCloseBtn):hover {
+
+
+#mhMarketOverlay #mhFetchBtn:hover {
   background: #1b6ce5;
 }
 
@@ -75,7 +79,7 @@
 }
 
 #mhResults {
-    flex: 1 1 auto;
+  flex: 1 1 auto;
 }
 
 #mhResults table {
@@ -96,41 +100,8 @@
   z-index: 1;
 }
 
-.ht_master .wtHolder {
-  border: none; /* remove outer border */
-}
-
-.ht_master .wtHider {
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.ht_master th {
-  background: rgba(46, 137, 255, 0.9);
-  color: white;
-  font-weight: bold;
-  text-align: center;
-  cursor: pointer; /* shows user can resize */
-}
-
-.ht_master td {
-  text-align: right;
-  white-space: nowrap; /* prevent wrapping */
-  padding: 4px 6px;
-  color: #eee;
-  background: rgba(25, 25, 25, 0.95);
-}
-
-.ht_master tr:nth-child(even) td {
-  background: rgba(25, 25, 25, 0.85);
-}
-
-.ht_master td:first-child {
-  text-align: left; /* first column left-aligned */
-}
-
-/* Remove selection highlight */
-.ht_master .htCore td.current,
-.ht_master .htCore td.active {
-  background: rgba(46, 137, 255, 0.3) !important;
+#mhMarketOverlay #mhResults .mh-copy {
+  color: #7dd3fc;
+  text-decoration: underline;
+  cursor: pointer;
 }
