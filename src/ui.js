@@ -26,7 +26,7 @@
   }
 
   // Setup drag and resize interactions for widget
-  function setupInteract(overlay){
+  function setupInteract(widget){
     interact("#mhMarketOverlay")
       .draggable({
         inertia: true,
@@ -64,7 +64,7 @@
         t.setAttribute("data-x", x); t.setAttribute("data-y", y);
       })
       .on("resizeend", () => { document.body.style.userSelect = ""; });
-    return overlay;
+    return widget;
   }
 
   // Render IAPs result in table

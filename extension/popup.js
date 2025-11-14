@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Send message to content script to toggle wdiget visibility
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (!tabs.length) return;
-      chrome.tabs.sendMessage(tabs[0].id, { action: "toggleOverlay" });
+      chrome.tabs.sendMessage(tabs[0].id, { action: "toggleWidget" });
     });
   }
 

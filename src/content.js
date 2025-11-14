@@ -6,19 +6,19 @@
   const WORKERS_LIMIT = 8;
 
   // Draw widget
-  const overlay = setupInteract(createWidget());
+  const widget = setupInteract(createWidget());
 
   // Get widget elements
-  const fetchBtn = overlay.querySelector("#mhFetchBtn");
-  const progressBar = overlay.querySelector("#mhProgress div");
-  const lastFetch = overlay.querySelector("#mhLastFetch");
+  const fetchBtn = widget.querySelector("#mhFetchBtn");
+  const progressBar = widget.querySelector("#mhProgress div");
+  const lastFetch = widget.querySelector("#mhLastFetch");
 
   // Listen for toggling visibility button click
   chrome.runtime.onMessage.addListener((msg) => {
-    if (msg.action !== "toggleOverlay" || !overlay) return;
-    const hidden = overlay.style.visibility === "hidden";
-    overlay.style.visibility = hidden ? "visible" : "hidden";
-    overlay.style.pointerEvents = hidden ? "auto" : "none";
+    if (msg.action !== "toggleWidget" || !widget) return;
+    const hidden = widget.style.visibility === "hidden";
+    widget.style.visibility = hidden ? "visible" : "hidden";
+    widget.style.pointerEvents = hidden ? "auto" : "none";
   });
 
   // Listen for fetch button click
