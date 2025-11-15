@@ -5,7 +5,7 @@
     STORE_CURRENCY: "USD"
   };
 
-  chrome.storage.local.get({ LOCAL_CURRENCY: "SGD", STORE_CURRENCY: "USD" }, (r) => {
+  chrome.storage.local.get(currency, (r) => {
     currency.LOCAL_CURRENCY = r.LOCAL_CURRENCY;
     currency.STORE_CURRENCY = r.STORE_CURRENCY;
   });
@@ -16,6 +16,8 @@
     if (changes.STORE_CURRENCY) currency.STORE_CURRENCY = changes.STORE_CURRENCY.newValue;
   });
 
-  window.mhMarketChecker = window.mhMarketChecker || {};
-  Object.assign(window.mhMarketChecker, currency);
+  window.mhMarketChecker = {
+    get LOCAL_CURRENCY() { return currency.LOCAL_CURRENCY; },
+    get STORE_CURRENCY() { return currency.STORE_CURRENCY; }
+  };
 })();
