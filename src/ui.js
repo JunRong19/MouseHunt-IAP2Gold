@@ -1,6 +1,5 @@
 "use strict";
 (function(){
-  // Simple tooltip helpers (custom, independent of Tabulator's tooltip)
   function ensureTooltipEl(){
     let tip = document.getElementById("mhGoldTooltip");
     if (!tip){
@@ -124,8 +123,8 @@
 
     // IAPs data
     const tableData = results.map(r => ({
+      full_name: r.full_name,
       name: r.name,
-      item: r.item_name,
       cost: r.iap_cost,
       units: r.units,
       gold: r.gold,
@@ -134,7 +133,7 @@
       // Tooltip details
       remaining_units: r.remaining_units,
       buy_order: r.buy_order,
-      buy_order_remaining: r.buy_order_remaining
+      buy_order_sum: r.buy_order_sum
     }));
 
     // Tabulator table
@@ -143,8 +142,8 @@
       layout: "fitColumns",
       reactiveData: true,
       columns: [
-        { title: "IAP Name", field: "name", hozAlign: "left", headerHozAlign: "left", resizable:false, headerWordWrap:true },
-        { title: "Item Name", field: "item", hozAlign:"left", headerHozAlign:"left", resizable:false, headerWordWrap:true,
+        { title: "IAP", field: "full_name", hozAlign: "left", headerHozAlign: "left", resizable:false, headerWordWrap:true },
+        { title: "Item", field: "name", hozAlign:"left", headerHozAlign:"left", resizable:false, headerWordWrap:true,
           formatter(cell){ const text = cell.getValue() ?? ""; const span = document.createElement("span"); span.className = "mh-copy"; span.textContent = text; span.title = "Click to copy"; return span; },
           async cellClick(_, cell){ const text = cell.getValue() ?? ""; try{ await navigator.clipboard.writeText(text); alert(`Copied! - ${text}`); }catch(e){ console.warn("Copy failed:", e); } }
         },
@@ -177,13 +176,15 @@
             const row = cell.getRow().getData();
             const buyOrders = Array.isArray(row.buy_order) ? row.buy_order : [];
             const remainingUnits = Number(row.remaining_units) || 0;
-            const buy_order_remaining_units = Number(row.buy_order_remaining.quantity) || 0;
-            const buy_order_remaining_limit = Number(row.buy_order_remaining.limit) || 0;
+            const buy_order_sum_units = Number(row.buy_order_sum.quantity) || 0;
+            const buy_order_sum_price = Number(row.buy_order_sum.limit) || 0;
             const units = Number(row.units) || 0;
             const gold = Number(row.gold) || 0;
             const guaranteed_units = units - remainingUnits;
-
-            let html = `<b>Buy Orders:</b><br>`;
+            
+            let html = `<div style="text-align: center; margin: auto; width: 80%;"><b>${row.name}</b></div><br>`;
+            
+            html += `<b>Buy Orders:</b><br>`;
 
             // Start table for alignment
             html += `<table style="border-collapse: collapse;">`;
@@ -213,12 +214,12 @@
             }
 
             if (remainingUnits > 0){
-              const sellableUnits = Math.min(remainingUnits, buy_order_remaining_units);
-              const unsellableUnits = Math.max(remainingUnits - buy_order_remaining_units, 0);
+              const sellableUnits = Math.min(remainingUnits, buy_order_sum_units);
+              const unsellableUnits = Math.max(remainingUnits - buy_order_sum_units, 0);
 
               if (sellableUnits){ 
                 html += `<br><b>Remaining Units:</b> ${remainingUnits}<br>`;
-                html += `Remaining ${sellableUnits} unit(s) can be sold for ${buy_order_remaining_limit.toLocaleString()}g or less.<br>`; 
+                html += `Remaining ${sellableUnits} unit(s) can be sold for ${buy_order_sum_price.toLocaleString()}g or less.<br>`; 
               } 
               
               if (unsellableUnits){

@@ -43,18 +43,18 @@
 
     // Parse and format IAP data
     return rewards.map(item => {
-      const fullName = item.name;
+      const full_name = item.name;
       
       // Separate units and name
-      const match = fullName.match(/(\d+)\s+(.*)/);
+      const match = full_name.match(/(\d+)\s+(.*)/);
       const units = match ? parseInt(match[1],10) : 1;
-      const name = match ? match[2] : fullName;
+      const name = match ? match[2] : full_name;
 
       // Convert cost of IAP to local currency
       const iap_cost = fx(item.value).from(STORE_CURRENCY).to(LOCAL_CURRENCY);
       const unit_cost = iap_cost / units;
 
-      return { full_name: fullName, name, units, iap_cost: iap_cost, unit_cost: unit_cost };
+      return { full_name, name, units, iap_cost, unit_cost };
     });
   }
 
@@ -69,11 +69,11 @@
 
     // Extract buy orders
     const buy_orders = json.marketplace_item_listings?.[itemId]?.buy ?? [];
-    const buy_order_remaining = json.marketplace_item_sum_listings?.[itemId]?.buy ?? [];
+    const buy_order_sum = json.marketplace_item_sum_listings?.[itemId]?.buy ?? [];
 
     return {
       buy_order: buy_orders,
-      buy_order_remaining: buy_order_remaining
+      buy_order_sum: buy_order_sum
     };
   }
 
@@ -112,17 +112,17 @@
       gold = Math.floor(gold);
 
       return {
-        name: iap.full_name,
-        item_name: singularize(iap.name),
+        full_name: iap.full_name,
+        name: singularize(iap.name),
         iap_cost: iap.iap_cost.toFixed(2),
         units: iap.units,
         gold,
         gold_per_cost: Math.floor(gold / iap.iap_cost),
 
         // Tooltip details
-        remaining_units: remaining_units,
+        remaining_units,
         buy_order: item.buy_order,
-        buy_order_remaining: item.buy_order_remaining
+        buy_order_sum: item.buy_order_sum
       };
     } catch(err){ console.error("Error fetching marketplace item:", err); return null; }
   }
