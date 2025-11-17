@@ -231,7 +231,42 @@
           cellMouseMove: function(e){ moveTooltip(e.clientX, e.clientY); },
           cellMouseLeave: function(){ hideTooltip(); }
         },
-        { title: `Gold / ${LOCAL_CURRENCY}`, field:"gold_per_cost", hozAlign:"left", headerHozAlign:"left", resizable:false, formatter:"money", formatterParams:{ precision:0, thousandsSeparator:"," }, headerWordWrap:true }
+        {
+          title: `Gold / ${LOCAL_CURRENCY}`,
+          field:"gold_per_cost",
+          hozAlign:"left",
+          headerHozAlign:"left",
+          resizable:false,
+          formatter:"money",
+          formatterParams:{ precision:0, thousandsSeparator:"," },
+          headerWordWrap:true,
+
+          titleFormatter: function(){
+            return `
+              <span class="tooltip-underline">
+                Gold / ${LOCAL_CURRENCY}
+              </span>
+            `;
+          },
+          titleFormatterParams: { html: true },
+
+          headerMouseEnter:function(e, column){
+            const html = `
+              <b>Note:</b><br>
+              Guaranteed gold from sellable units per ${LOCAL_CURRENCY}.
+            `;
+
+            showTooltip(e.clientX, e.clientY, html);
+          },
+
+          headerMouseMove:function(e){
+            moveTooltip(e.clientX, e.clientY);
+          },
+
+          headerMouseLeave:function(){
+            hideTooltip();
+          }
+        }
       ],
       height: "100%"
     });

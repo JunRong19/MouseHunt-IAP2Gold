@@ -105,8 +105,9 @@
 }
 
 .tooltip-underline {
-    border-bottom: 1px dashed #a4a4a4;
-    padding-bottom: 1px;
+  display: inline-block; 
+  border-bottom: 1px dashed #a4a4a4;
+  padding-bottom: 1px;
 }
 
 .tabulator-tooltip {
