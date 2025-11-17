@@ -52,7 +52,7 @@
 
     el.innerHTML = `
       <div class="header">
-        <h3>MouseHunt Market Checker</h3>
+        <h3>🪤 MouseHunt IAP2GOLD 🪤</h3>
         <span id="mhLastFetch">Last Fetch: --</span>
         <button id="mhCloseBtn">✖</button>
       </div>
@@ -219,7 +219,7 @@
 
               if (sellableUnits){ 
                 html += `<br><b>Remaining Units:</b> ${remainingUnits}<br>`;
-                html += `Remaining ${sellableUnits} unit(s) can be sold for ${buy_order_sum_price.toLocaleString()}g or less.<br>`; 
+                html += `Remaining ${sellableUnits} unit(s) can be sold for ${buy_order_sum_price.toLocaleString()}g each or less.<br>`; 
               } 
               
               if (unsellableUnits){
