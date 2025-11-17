@@ -45,15 +45,16 @@
     return rewards.map(item => {
       const fullName = item.name;
       
-      // Separate quantity and name
+      // Separate units and name
       const match = fullName.match(/(\d+)\s+(.*)/);
-      const quantity = match ? parseInt(match[1],10) : 1;
+      const units = match ? parseInt(match[1],10) : 1;
       const name = match ? match[2] : fullName;
 
       // Convert cost of IAP to local currency
-      const totalCost = fx(item.value).from(STORE_CURRENCY).to(LOCAL_CURRENCY);
+      const iap_cost = fx(item.value).from(STORE_CURRENCY).to(LOCAL_CURRENCY);
+      const unit_cost = iap_cost / units;
 
-      return { full_name: fullName, name, quantity, total_cost: totalCost, unit_cost: totalCost/quantity };
+      return { full_name: fullName, name, units, iap_cost: iap_cost, unit_cost: unit_cost };
     });
   }
 
@@ -66,13 +67,14 @@
     });
     const json = await res.json();
 
-    // Extract buy/sell orders
-    const listings = json.marketplace_item_listings?.[itemId] || { buy: [], sell: [] };
+    // Extract buy orders
+    const buy_orders = json.marketplace_item_listings?.[itemId]?.buy ?? [];
+    const buy_order_remaining = json.marketplace_item_sum_listings?.[itemId]?.buy ?? [];
 
-    // Extract sum orders
-    const sums = json.marketplace_item_sum_listings?.[itemId] || { buy: [], sell: [] };
-
-    return { buy: listings.buy, sell: listings.sell, buy_limit: sums.buy, sell_limit: sums.sell, itemId };
+    return {
+      buy_order: buy_orders,
+      buy_order_remaining: buy_order_remaining
+    };
   }
 
   async function fetchMarketPrice(iap){
@@ -92,29 +94,35 @@
       // Fetch item from marketplace using item ID
       const item = await fetchMarketplaceItem(match.item_info.item_id);
 
-      let remaining = iap.quantity; 
-      let goldTotal = 0;
+      let remaining_units = iap.units; 
+      let gold = 0;
       
       // Calculate total gold from buy orders
-      for (const listing of item.buy){
-        if (!remaining) break;
+      for (const listing of item.buy_order){
+        if (!remaining_units) break;
 
-        // Calculate purchasable units from buy orders
-        const purchasable = Math.min(remaining, listing.quantity);
-        goldTotal += purchasable * listing.unit_price;
-        remaining -= purchasable;
+        // Calculate sellable units from buy orders
+        const sellable_units = Math.min(remaining_units, listing.quantity);
+        gold += sellable_units * listing.unit_price;
+        remaining_units -= sellable_units;
       }
       
       // 10% tariff deduction
-      goldTotal *= 0.9;
+      gold *= 0.9;
+      gold = Math.floor(gold);
 
       return {
         name: iap.full_name,
         item_name: singularize(iap.name),
-        cost: iap.total_cost.toFixed(2),
-        sellableUnit: iap.quantity - remaining, // Units that could be sold to the current buy orders
-        goldTotal,
-        goldPerCost: Math.round(goldTotal / iap.total_cost)
+        iap_cost: iap.iap_cost.toFixed(2),
+        units: iap.units,
+        gold,
+        gold_per_cost: Math.floor(gold / iap.iap_cost),
+
+        // Tooltip details
+        remaining_units: remaining_units,
+        buy_order: item.buy_order,
+        buy_order_remaining: item.buy_order_remaining
       };
     } catch(err){ console.error("Error fetching marketplace item:", err); return null; }
   }

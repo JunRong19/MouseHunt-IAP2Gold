@@ -38,11 +38,10 @@
     const results = (await runWithConcurrency(tasks, WORKERS_LIMIT, p => {
       progressBar.style.width = (p * 100).toFixed(1) + "%";
     })).filter(Boolean);
-    results.sort((a,b) => b.goldPerCost - a.goldPerCost);
+    results.sort((a,b) => b.gold_per_cost - a.gold_per_cost);
 
     // Display IAPs in table
-    const { LOCAL_CURRENCY } = window.mhMarketChecker;
-    renderTable(results, LOCAL_CURRENCY);
+    renderTable(results);
 
     // Re-enable button
     fetchBtn.textContent = "Fetch Market Data"; fetchBtn.disabled = false;
