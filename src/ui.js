@@ -253,7 +253,7 @@
           headerMouseEnter:function(e, column){
             const html = `
               <b>Note:</b><br>
-              Guaranteed gold from sellable units per ${LOCAL_CURRENCY}.
+              Gold from sellable units per ${LOCAL_CURRENCY}.
             `;
 
             showTooltip(e.clientX, e.clientY, html);
