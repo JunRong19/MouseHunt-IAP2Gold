@@ -1,18 +1,19 @@
 {
   "manifest_version": 3,
-  "name": "MouseHunt IAP Market Checker",
-  "version": "2.0.0",
-  "description": "Fetch MouseHunt IAP rewards and compare their market values with live MarketHunt data.",
+  "name": "MouseHunt IAP2Gold",
+  "version": "0.0.0.1",
+  "description": "Converts IAP rewards to gold using live market data.",
   "permissions": [
-    "storage",
-    "scripting",
-    "activeTab"
+    "storage"
   ],
   "host_permissions": [
     "https://www.mousehuntgame.com/*",
     "https://api.markethunt.win/*",
     "https://api.exchangerate-api.com/*"
   ],
+  "icons": {
+    "128": "extension/icons/icon_128.png"
+  },
   "content_scripts": [
     {
       "matches": ["https://www.mousehuntgame.com/*"],
@@ -33,8 +34,7 @@
     }
   ],
   "action": {
-    "default_popup": "extension/popup.html",
-    "default_title": "MouseHunt IAP2Gold"
+    "default_popup": "extension/popup.html"
   },
   "homepage_url": "https://github.com/JunRong19/MouseHunt-IAP2Gold",
   "author": "Tan Jun Rong"

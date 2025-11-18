@@ -52,7 +52,7 @@
 
     el.innerHTML = `
       <div class="header">
-        <h3>🪤 MouseHunt IAP2GOLD 🪤</h3>
+        <h3>MouseHunt IAP2GOLD</h3>
         <span id="mhLastFetch">Last Fetch: --</span>
         <button id="mhCloseBtn">✖</button>
       </div>
