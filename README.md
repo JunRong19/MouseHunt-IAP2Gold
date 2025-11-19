@@ -1,18 +1,44 @@
 # 🧀 MouseHunt IAP2Gold 🧀
 
-**MouseHunt IAP2Gold** is a browser extension that shows the estimated gold value of premium shop rewards (IAPs) based on live marketplace buy orders. 
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/fcjnhpajemeajknjpflcckonjnkmkiof?label=Chrome%20Web%20Store&logo=google-chrome)](https://chromewebstore.google.com/detail/mousehunt-iap2gold)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-It helps players identify which items give the most gold for their money and make cost-effective in-game purchase decisions.
+**MouseHunt IAP2Gold** is a browser extension that calculates the gold value of premium shop rewards (IAPs) in MouseHunt using live marketplace buy orders.  
 
-## Installation
-- **Chrome:** [Install on Chrome Web Store](https://chromewebstore.google.com/detail/mousehunt-iap2gold)
+It helps players identify which items give the most gold for their money, making in-game purchases more cost-effective.  
 
-## Features
+---
 
-- Calculates current market value for all MouseHunt IAP rewards
-- Uses live marketplace buy orders for accurate, up-to-date estimates
-- Helps identify the most cost-effective purchases
-- Set preferred store and local currencies for accurate value calculations
+## 📥 Installation
 
-## License
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for full details.
+- **Chrome:** [Install on Chrome Web Store](https://chromewebstore.google.com/detail/mousehunt-iap2gold)  
+
+---
+
+## ✨ Features
+
+- Calculates current market value for all MouseHunt IAP rewards  
+- Uses live marketplace buy orders for accurate, up-to-date estimates  
+- Helps identify the most cost-effective purchases  
+- Set preferred store and local currencies for accurate value calculations  
+- Floating widget with sortable table and detailed buy order tooltips  
+
+---
+
+## 📸 Screenshots
+
+<p align="center">
+  <img src="./assets/Screenshot_1.png" alt="Floating Widget" width="600"><br>
+  Shows IAP details and their gold value using live market data.
+</p>
+
+<p align="center">
+  <img src="./assets/Screenshot_2.png" alt="Tooltip" width="600"><br>
+  Tooltip to show detailed breakdown of buy orders and sellable units.
+</p>
+
+---
+
+## 📖 License
+
+This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE) file for full details.  
