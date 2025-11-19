@@ -20,12 +20,12 @@ It helps players identify which IAP give the most gold for their money, making i
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="./assets/Screenshot_1.png" alt="Floating Widget" width="600"><br>
+  <img src="./assets/Overview.png" alt="Floating Widget" width="600"><br>
   Shows IAP details and their gold value using live market data.
 </p>
 
 <p align="center">
-  <img src="./assets/Screenshot_2.png" alt="Tooltip" width="600"><br>
+  <img src="./assets/Tooltip.png" alt="Tooltip" width="600"><br>
   Tooltip to show detailed breakdown of buy orders and sellable units.
 </p>
 
