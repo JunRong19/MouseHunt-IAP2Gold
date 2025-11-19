@@ -1,8 +1,8 @@
 "use strict";
+import { createWidget, setupInteract, renderTable } from "./ui.js";
+import { setDailyRates, fetchIAPs, parseIAPs, fetchMarketPrice } from "./api.js";
+
 (function(){
-  if (window.hasRunMHMarketChecker) return; window.hasRunMHMarketChecker = true;
-  const { createWidget, setupInteract, renderTable, setDailyRates, fetchIAPs, parseIAPs, fetchMarketPrice } = window.mhMarketChecker;
-  
   const WORKERS_LIMIT = 8;
 
   // Draw widget

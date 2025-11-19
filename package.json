@@ -3,5 +3,27 @@
     "interactjs": "^1.10.27",
     "money": "^0.2.0",
     "tabulator-tables": "^6.3.1"
-  }
+  },
+  "name": "mh",
+  "version": "1.0.0",
+  "description": "[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/fcjnhpajemeajknjpflcckonjnkmkiof?label=Chrome%20Web%20Store&logo=google-chrome)](https://chromewebstore.google.com/detail/mousehunt-iap2gold/fcjnhpajemeajknjpflcckonjnkmkiof)  \r [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)",
+  "main": "index.js",
+  "devDependencies": {
+    "copyfiles": "^2.4.1",
+    "esbuild": "^0.27.0"
+  },
+  "scripts": {
+    "build": "node esbuild.config.js && copyfiles -u 2 src/extension/icons/* build/extension && copyfiles -u 2 src/extension/*.html build/extension && copyfiles -u 1 src/styles/*.css build && copyfiles -u 1 src/libs/* build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JunRong19/MouseHunt-IAP-Value-Analyzer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JunRong19/MouseHunt-IAP-Value-Analyzer/issues"
+  },
+  "homepage": "https://github.com/JunRong19/MouseHunt-IAP-Value-Analyzer#readme"
 }

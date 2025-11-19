@@ -12,29 +12,24 @@
     "https://api.exchangerate-api.com/*"
   ],
   "icons": {
-    "128": "extension/icons/icon_128.png"
+    "128": "build/extension/icons/icon_128.png"
   },
   "content_scripts": [
-    {
-      "matches": ["https://www.mousehuntgame.com/*"],
-      "js": [
-        "libs/interact.min.js",
-        "libs/tabulator.min.js",
-        "libs/money.min.js",
-        "src/currency.js",
-        "src/api.js",
-        "src/ui.js",
-        "src/content.js"
-      ],
-      "css": [
-        "styles/tabulator_site_dark.min.css",
-        "styles/styles.css"
-      ],
-      "run_at": "document_end"
-    }
-  ],
+  {
+    "matches": ["https://www.mousehuntgame.com/*"],
+    "js": [
+      "build/libs/money.min.js",
+      "build/content.js"
+    ],
+    "css": [
+      "build/styles/tabulator_site_dark.min.css",
+      "build/styles/styles.css"
+    ],
+    "run_at": "document_end"
+  }
+],
   "action": {
-    "default_popup": "extension/popup.html"
+    "default_popup": "build/extension/popup.html"
   },
   "homepage_url": "https://github.com/JunRong19/MouseHunt-IAP2Gold",
   "author": "Tan Jun Rong"
