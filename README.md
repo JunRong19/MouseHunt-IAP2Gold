@@ -9,7 +9,7 @@ It helps players identify which IAP give the most gold for their money, making i
 
 ## 📥 Installation
 
-- **Chrome:** [Install on Chrome Web Store](https://chromewebstore.google.com/detail/mousehunt-iap2gold)  
+- **Chrome:** [Install on Chrome Web Store](https://chromewebstore.google.com/detail/mousehunt-iap2gold/fcjnhpajemeajknjpflcckonjnkmkiof)  
 
 ## ✨ Features
 
