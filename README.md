@@ -7,13 +7,9 @@
 
 It helps players identify which IAP give the most gold for their money, making in-game purchases more cost-effective.  
 
----
-
 ## 📥 Installation
 
 - **Chrome:** [Install on Chrome Web Store](https://chromewebstore.google.com/detail/mousehunt-iap2gold)  
-
----
 
 ## ✨ Features
 
@@ -22,8 +18,6 @@ It helps players identify which IAP give the most gold for their money, making i
 - Helps identify the most cost-effective purchases  
 - Set preferred store and local currencies for accurate value calculations  
 - Floating widget with sortable table and detailed buy order tooltips  
-
----
 
 ## 📸 Screenshots
 
@@ -36,8 +30,6 @@ It helps players identify which IAP give the most gold for their money, making i
   <img src="./assets/Screenshot_2.png" alt="Tooltip" width="600"><br>
   Tooltip to show detailed breakdown of buy orders and sellable units.
 </p>
-
----
 
 ## 📖 License
 
