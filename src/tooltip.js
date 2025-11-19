@@ -1,22 +1,9 @@
 "use strict";
-function ensureTooltipEl(){
+function ensureTooltipEl() {
     let tip = document.getElementById("mhGoldTooltip");
-    if (!tip){
+    if (!tip) {
         tip = document.createElement("div");
         tip.id = "mhGoldTooltip";
-        tip.style.position = "fixed";
-        tip.style.maxWidth = "320px";
-        tip.style.background = "rgba(20,20,20,0.95)";
-        tip.style.color = "#e5e7eb";
-        tip.style.border = "1px solid #374151";
-        tip.style.borderRadius = "8px";
-        tip.style.padding = "8px 10px";
-        tip.style.fontSize = "12px";
-        tip.style.lineHeight = "1.35";
-        tip.style.pointerEvents = "none";
-        tip.style.zIndex = "1000001"; // above overlay
-        tip.style.boxShadow = "0 4px 12px rgba(0,0,0,0.35)";
-        tip.style.display = "none";
         document.body.appendChild(tip);
     }
     return tip;

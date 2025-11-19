@@ -114,3 +114,19 @@
   text-align: right;
   z-index: 1000000;
 }
+
+#mhGoldTooltip {
+    position: fixed;
+    max-width: 320px;
+    background: rgba(20, 20, 20, 0.95);
+    color: #e5e7eb;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+    line-height: 1.35;
+    pointer-events: none;
+    z-index: 1000001; /* above overlay */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    display: none;
+}
