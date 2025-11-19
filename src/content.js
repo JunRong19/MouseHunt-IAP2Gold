@@ -13,12 +13,20 @@
   const progressBar = widget.querySelector("#mhProgress div");
   const lastFetch = widget.querySelector("#mhLastFetch");
 
+  chrome.storage.local.get({ widgetVisible: "visible" }, (result) => {
+    widget.style.visibility = result.widgetVisible;
+  });
+
   // Listen for toggling visibility button click
   chrome.runtime.onMessage.addListener((msg) => {
     if (msg.action !== "toggleWidget" || !widget) return;
+
     const hidden = widget.style.visibility === "hidden";
     widget.style.visibility = hidden ? "visible" : "hidden";
     widget.style.pointerEvents = hidden ? "auto" : "none";
+
+    // Save state
+    chrome.storage.local.set({ widgetVisible: widget.style.visibility });
   });
 
   // Listen for fetch button click

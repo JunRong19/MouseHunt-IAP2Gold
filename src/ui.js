@@ -65,6 +65,7 @@
     // Close button
     el.querySelector("#mhCloseBtn").addEventListener("click", () => {
       el.style.visibility = "hidden"; el.style.pointerEvents = "none";
+      chrome.storage.local.set({ widgetVisible: el.style.visibility});
     });
 
     return el;

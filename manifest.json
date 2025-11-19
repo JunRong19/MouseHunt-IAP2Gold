@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "MouseHunt IAP2Gold",
   "version": "0.0.0.1",
-  "description": "Check how much MouseHunt IAPs are worth in gold using live marketplace buy orders.",
+  "description": "Find out how much MouseHunt IAPs are worth in gold using live marketplace buy orders.",
   "permissions": [
     "storage"
   ],
