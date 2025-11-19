@@ -14,10 +14,8 @@ It helps players identify which IAP give the most gold for their money, making i
 ## ✨ Features
 
 - Calculates current market value for all MouseHunt IAP rewards  
-- Uses live marketplace buy orders for accurate, up-to-date estimates  
+- Uses live marketplace buy orders for accurate, up-to-date results  
 - Helps identify the most cost-effective purchases  
-- Set preferred store and local currencies for accurate value calculations  
-- Floating widget with sortable table and detailed buy order tooltips  
 
 ## 📸 Screenshots
 
