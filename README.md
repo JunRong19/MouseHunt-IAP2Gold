@@ -31,4 +31,4 @@ It helps players identify which IAP give the most gold for their money, making i
 
 ## 📖 License
 
-This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE) file for full details.  
+This project is for **learning purposes only**. See [LICENSE](./LICENSE) for terms.  
