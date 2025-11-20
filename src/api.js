@@ -1,5 +1,6 @@
 "use strict";
 import { CURRENCY } from "./currency.js";
+import itemMap from "./data/itemMap.json";
 
 const EXCHANGE_URL      = "https://api.exchangerate-api.com/v4/latest/USD";
 const MARKET_SEARCH_URL = "https://api.markethunt.win/items/search?query=";
@@ -55,20 +56,31 @@ export function parseIAPs(rewards){
 
 export async function fetchMarketPrice(iap){
   // Remove plural for search
-  const cleanName = singularize(iap.name).replace(/[|+]/g, "");
+  const cleanName = singularize(iap.name).replace(/[|+]/g, "").toLowerCase();
 
   try {
-    // Seach for item that is in market
-    const q = encodeURIComponent(cleanName);
-    const r = await fetch(`${MARKET_SEARCH_URL}${q}`);
-    const data = await r.json();
-    
-    // Find exact match of item name
-    const match = data.find(x => x.item_info?.name?.toLowerCase() === cleanName.toLowerCase());
-    if (!match) return null;
+    let itemId;
 
-    // Fetch item from marketplace using item ID
-    const item = await fetchMarketplaceItem(match.item_info.item_id);
+    // Use pre-generated map first
+    if (itemMap[cleanName]) {
+      itemId = itemMap[cleanName];
+      console.log("Found item ID from map for:", iap.name, "ID:", itemId);
+    } else {
+      // Fallback: fetch from API
+      const q = encodeURIComponent(cleanName);
+      const r = await fetch(`${MARKET_SEARCH_URL}${q}`);
+      const data = await r.json();
+      const match = data.find(x => x.item_info?.name?.toLowerCase() === cleanName.toLowerCase());
+      if (!match){
+        console.warn("No marketplace item found for:", iap.name);
+        return null;
+      }
+      itemId = match.item_info.item_id;
+      console.log("Fetched item ID from API for:", iap.name, "ID:", itemId);
+    }
+
+    // Fetch marketplace item
+    const item = await fetchMarketplaceItem(itemId);
 
     let remaining_units = iap.units; 
     let gold = 0;
@@ -107,21 +119,36 @@ function singularize(name){
   return name.endsWith("s") ? name.slice(0,-1) : name; 
 }
 
-async function fetchMarketplaceItem(itemId){
+// Stores and return item data if fetching the same item id again.
+export const marketplaceCache = new Map();
+async function fetchMarketplaceItem(itemId) {
+  // Check cache first
+  if (marketplaceCache.has(itemId)) {
+    // console.log("Using cached marketplace data for item ID:", itemId);
+    return marketplaceCache.get(itemId);
+  }
+
   // Fetch marketplace listings for given item ID
   const res = await fetch("/managers/ajax/users/marketplace.php", {
     method: "POST",
-    headers: {"X-Requested-With":"XMLHttpRequest","Content-Type":"application/x-www-form-urlencoded; charset=UTF-8"},
+    headers: {
+      "X-Requested-With": "XMLHttpRequest",
+      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+    },
     body: `action=get_item_listings&item_id=${itemId}`
   });
+
   const json = await res.json();
 
-  // Extract buy orders
   const buy_orders = json.marketplace_item_listings?.[itemId]?.buy ?? [];
   const buy_order_sum = json.marketplace_item_sum_listings?.[itemId]?.buy ?? [];
 
-  return {
+  const result = {
     buy_order: buy_orders,
     buy_order_sum: buy_order_sum
   };
+
+  // Store in cache
+  marketplaceCache.set(itemId, result);
+  return result;
 }

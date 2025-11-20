@@ -6,14 +6,24 @@
   },
   "name": "mh",
   "version": "1.0.0",
+  "type": "module",
   "description": "[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/fcjnhpajemeajknjpflcckonjnkmkiof?label=Chrome%20Web%20Store&logo=google-chrome)](https://chromewebstore.google.com/detail/mousehunt-iap2gold/fcjnhpajemeajknjpflcckonjnkmkiof)  \r [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)",
   "main": "index.js",
   "devDependencies": {
     "copyfiles": "^2.4.1",
-    "esbuild": "^0.27.0"
+    "esbuild": "^0.27.0",
+    "node-fetch": "^3.3.2"
   },
   "scripts": {
-    "build": "node esbuild.config.js && copyfiles -u 2 src/extension/icons/* build/extension && copyfiles -u 2 src/extension/*.html build/extension && copyfiles -u 1 src/styles/*.css build && copyfiles -u 1 src/libs/* build"
+    "build:itemMap": "node generateItemMap.js",
+    "build:esbuild": "node esbuild.config.js",
+    "copy:icons": "copyfiles -u 2 src/extension/icons/* build/extension",
+    "copy:html": "copyfiles -u 2 src/extension/*.html build/extension",
+    "copy:css": "copyfiles -u 1 src/styles/*.css build",
+    "copy:libs": "copyfiles -u 1 src/libs/* build",
+    "copy:data": "copyfiles -u 2 src/data/itemMap.json build/data",
+    "build:copy": "npm run copy:icons && npm run copy:html && npm run copy:css && npm run copy:libs && npm run copy:data",
+    "build": "npm run build:itemMap && npm run build:esbuild && npm run build:copy"
   },
   "repository": {
     "type": "git",

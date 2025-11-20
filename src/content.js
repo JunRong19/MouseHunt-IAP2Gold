@@ -1,6 +1,6 @@
 "use strict";
 import { createWidget, setupInteract, renderTable } from "./ui.js";
-import { setDailyRates, fetchIAPs, parseIAPs, fetchMarketPrice } from "./api.js";
+import { marketplaceCache, setDailyRates, fetchIAPs, parseIAPs, fetchMarketPrice } from "./api.js";
 
 (function(){
   const WORKERS_LIMIT = 8;
@@ -31,6 +31,9 @@ import { setDailyRates, fetchIAPs, parseIAPs, fetchMarketPrice } from "./api.js"
 
   // Listen for fetch button click
   fetchBtn.addEventListener("click", async () => {
+    // Clear previous cache to get new market data
+    marketplaceCache.clear();
+
     // Disable button
     fetchBtn.disabled = true; fetchBtn.textContent = "Fetching...";
 

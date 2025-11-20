@@ -1,5 +1,3 @@
-import interact from "../src/libs/interact.min.js";
-import Tabulator from "../src/libs/tabulator.min.js";
 import { showTooltip, hideTooltip, moveTooltip } from "./tooltip.js";
 import { CURRENCY } from "./currency.js";
 

@@ -7,9 +7,7 @@
     "storage"
   ],
   "host_permissions": [
-    "https://www.mousehuntgame.com/*",
-    "https://api.markethunt.win/*",
-    "https://api.exchangerate-api.com/*"
+    "https://www.mousehuntgame.com/*"
   ],
   "icons": {
     "128": "build/extension/icons/icon_128.png"
@@ -18,6 +16,8 @@
   {
     "matches": ["https://www.mousehuntgame.com/*"],
     "js": [
+      "build/libs/interact.min.js",
+      "build/libs/tabulator.min.js",
       "build/libs/money.min.js",
       "build/content.js"
     ],
