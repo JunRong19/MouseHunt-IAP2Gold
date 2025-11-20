@@ -1,11 +1,10 @@
 # 🧀 MouseHunt IAP2Gold 🧀
 
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/fcjnhpajemeajknjpflcckonjnkmkiof?label=Chrome%20Web%20Store&logo=google-chrome)](https://chromewebstore.google.com/detail/mousehunt-iap2gold/fcjnhpajemeajknjpflcckonjnkmkiof)  
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-**MouseHunt IAP2Gold** is a browser extension for MouseHunt that calculates the gold value of premium shop rewards (IAPs) using live marketplace buy orders.
+**MouseHunt IAP2Gold** is a browser extension for MouseHunt that calculates the gold value of premium shop rewards (IAPs) using live marketplace buy orders. It helps players identify which IAP give the most gold for their money, making in-game purchases more cost-effective.
 
-It helps players identify which IAP give the most gold for their money, making in-game purchases more cost-effective.  
+Play MouseHunt [here](https://www.mousehuntgame.com/)
 
 ## 📥 Installation
 
@@ -31,4 +30,4 @@ It helps players identify which IAP give the most gold for their money, making i
 
 ## 📖 License
 
-This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE) file for full details.  
+This project is for **learning purposes only**. See [LICENSE](./LICENSE) for terms.  
