@@ -30,4 +30,4 @@ Play MouseHunt [here](https://www.mousehuntgame.com/)
 
 ## 📖 License
 
-This project is for **learning purposes only**. See [LICENSE](./LICENSE) for terms.  
+This project is licensed under the **GNU General Public License v3.0 (GPLv3)**. See the [LICENSE](./LICENSE) file for full details.
