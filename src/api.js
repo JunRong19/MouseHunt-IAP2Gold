@@ -64,7 +64,6 @@ export async function fetchMarketPrice(iap){
     // Use pre-generated map first
     if (itemMap[cleanName]) {
       itemId = itemMap[cleanName];
-      console.log("Found item ID from map for:", iap.name, "ID:", itemId);
     } else {
       // Fallback: fetch from API
       const q = encodeURIComponent(cleanName);
@@ -72,11 +71,9 @@ export async function fetchMarketPrice(iap){
       const data = await r.json();
       const match = data.find(x => x.item_info?.name?.toLowerCase() === cleanName.toLowerCase());
       if (!match){
-        console.warn("No marketplace item found for:", iap.name);
         return null;
       }
       itemId = match.item_info.item_id;
-      console.log("Fetched item ID from API for:", iap.name, "ID:", itemId);
     }
 
     // Fetch marketplace item
@@ -124,7 +121,6 @@ export const marketplaceCache = new Map();
 async function fetchMarketplaceItem(itemId) {
   // Check cache first
   if (marketplaceCache.has(itemId)) {
-    // console.log("Using cached marketplace data for item ID:", itemId);
     return marketplaceCache.get(itemId);
   }
 
