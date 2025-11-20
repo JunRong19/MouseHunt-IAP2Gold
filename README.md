@@ -19,7 +19,7 @@ Play MouseHunt [here](https://www.mousehuntgame.com/)
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="./assets/Overview.png" alt="Floating Widget" width="600"><br>
+  <img src="./assets/InGame.png" alt="Floating Widget" width="600"><br>
   Shows IAP details and their gold value using live market data.
 </p>
 
