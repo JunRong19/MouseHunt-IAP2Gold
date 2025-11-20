@@ -19,7 +19,7 @@ Play MouseHunt [here](https://www.mousehuntgame.com/)
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="./assets/Overview.png" alt="Floating Widget" width="600"><br>
+  <img src="./assets/InGame.png" alt="Floating Widget" width="600"><br>
   Shows IAP details and their gold value using live market data.
 </p>
 
@@ -30,4 +30,4 @@ Play MouseHunt [here](https://www.mousehuntgame.com/)
 
 ## 📖 License
 
-This project is for **learning purposes only**. See [LICENSE](./LICENSE) for terms.  
+This project is licensed under the **GNU General Public License v3.0 (GPLv3)**. See the [LICENSE](./LICENSE) file for full details.
