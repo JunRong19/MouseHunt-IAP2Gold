@@ -77,7 +77,7 @@
 }
 #mhResults {
   flex: 1 1 auto;
-  color: white
+  color: white;
 }
 
 #mhResults table {
@@ -129,4 +129,24 @@
     z-index: 1000001; /* above overlay */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
     display: none;
+}
+
+#columnToggle {
+  flex: 0 0 auto; /* Prevent flex from collapsing it */
+  margin-bottom: 8px;
+  color: white;
+}
+
+
+#columnToggle label {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 10px;
+  font-size: 12px;
+  color: white;
+  cursor: pointer;
+}
+
+#columnToggle input[type="checkbox"] {
+  margin-right: 4px;
 }

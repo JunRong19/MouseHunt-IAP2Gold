@@ -3,8 +3,8 @@ import { CURRENCY } from "./currency.js";
 import itemMap from "./data/itemMap.json";
 
 const EXCHANGE_URL  = "https://api.exchangerate-api.com/v4/latest/USD";
-const MARKET_QUERY  = query => `https://api.markethunt.win/items/search?query=${query}`;
 const MARKET_ITEMS  = "https://api.markethunt.win/items"
+const MARKET_QUERY  = query => `https://api.markethunt.win/items/search?query=${query}`;
 
 
 // Fetch all SB prices of items.

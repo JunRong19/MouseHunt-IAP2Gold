@@ -14,6 +14,7 @@ export function createWidget(){
     </div>
     <button id="mhFetchBtn">Fetch Market Data</button>
     <div id="mhProgress"><div></div></div>
+    <div id="columnToggle"></div>
     <div id="mhResults"><p>No data yet.</p></div>`;
 
   document.body.appendChild(el);
@@ -68,16 +69,18 @@ export function setupInteract(widget){
   return widget;
 }
 
+let table;
 export async function renderTable(results){
   const resultsDiv = document.querySelector("#mhResults");
-  resultsDiv.innerHTML = "";
-  
-  if (!results.length){ resultsDiv.innerHTML = "<p>No market data found.</p>"; return; }
+
+  if (!results.length){
+    resultsDiv.innerHTML = "<p>No market data found.</p>"; 
+    return;
+  }
 
   let sb_price = await getSBPrice();
   sb_price = sb_price.toLocaleString();
 
-  // IAPs data
   const tableData = results.map(r => ({
     full_name: r.full_name,
     name: r.name,
@@ -86,45 +89,42 @@ export async function renderTable(results){
     super_brie: Math.floor(r.super_brie ?? 0),
     gold: r.gold,
     gold_per_cost: r.gold_per_cost,
-
-    // Tooltip details
     remaining_units: r.remaining_units,
     buy_order: r.buy_order,
     buy_order_sum: r.buy_order_sum
   }));
 
-  // Tabulator table
-  new Tabulator(resultsDiv, {
+  // Initialize Tabulator
+  table = new Tabulator(resultsDiv, {
     data: tableData,
     layout: "fitColumns",
     reactiveData: true,
+    height: "100%",
     columns: [
       { title: "IAP", field: "full_name", hozAlign: "left", headerHozAlign: "left", resizable:false, headerWordWrap:true },
       { title: "Item", field: "name", hozAlign:"left", headerHozAlign:"left", resizable:false, headerWordWrap:true,
-        formatter(cell){ const text = cell.getValue() ?? ""; const span = document.createElement("span"); span.className = "mh-copy"; span.textContent = text; span.title = "Click to copy"; return span; },
-        async cellClick(_, cell){ const text = cell.getValue() ?? ""; try{ await navigator.clipboard.writeText(text); alert(`Copied! - ${text}`); }catch(e){ console.warn("Copy failed:", e); } }
+        formatter(cell){ 
+          const text = cell.getValue() ?? ""; 
+          const span = document.createElement("span"); 
+          span.className = "mh-copy"; 
+          span.textContent = text; 
+          span.title = "Click to copy"; 
+          return span; 
+        },
+        async cellClick(_, cell){ 
+          const text = cell.getValue() ?? ""; 
+          try{ await navigator.clipboard.writeText(text); alert(`Copied! - ${text}`); } 
+          catch(e){ console.warn("Copy failed:", e); } 
+        }
       },
-      {
-        title: "Cost",
-        field: "cost",
-        hozAlign: "left",
-        headerHozAlign: "left",
-        resizable: false,
-        headerWordWrap: true,
-
+      { title: "Cost", field: "cost", hozAlign: "left", headerHozAlign:"left", resizable:false, headerWordWrap:true,
         formatter: function (cell) {
           const value = cell.getValue();
           return `${value} ${CURRENCY.LOCAL}`;
         }
       },
       { title: "Units", field: "units", hozAlign:"left", headerHozAlign:"left", resizable:false, headerWordWrap:true },
-      {
-        title: "Gold",
-        field: "gold",
-        hozAlign: "left",
-        headerHozAlign: "left",
-        resizable: false,
-        headerWordWrap: true,
+      { title: "Gold", field: "gold", hozAlign: "left", headerHozAlign: "left", resizable:false, headerWordWrap:true,
         formatter: function(cell){
           const val = Number(cell.getValue()) || 0;
           return `<span class="tooltip-underline">${val.toLocaleString()}</span>`;
@@ -138,12 +138,9 @@ export async function renderTable(results){
           const units = Number(row.units) || 0;
           const gold = Number(row.gold) || 0;
           const guaranteed_units = units - remainingUnits;
-          
-          let html = `<div style="text-align: center; margin: auto; width: 80%;"><b>${row.name}</b></div><br>`;
-          
-          html += `<b>Buy Orders:</b><br>`;
 
-          // Start table for alignment
+          let html = `<div style="text-align: center; margin: auto; width: 80%;"><b>${row.name}</b></div><br>`;
+          html += `<b>Buy Orders:</b><br>`;
           html += `<table style="border-collapse: collapse;">`;
 
           if (buyOrders.length){
@@ -161,8 +158,6 @@ export async function renderTable(results){
           } else {
             html += `<tr><td colspan="3">No buy orders available.</td></tr>`;
           }
-
-          // End table
           html += `</table>`;
 
           if (guaranteed_units > 0){
@@ -189,61 +184,26 @@ export async function renderTable(results){
         cellMouseMove: function(e){ moveTooltip(e.clientX, e.clientY); },
         cellMouseLeave: function(){ hideTooltip(); }
       },
-      {
-        title: `Gold / ${CURRENCY.LOCAL}`,
-        field:"gold_per_cost",
-        hozAlign:"left",
-        headerHozAlign:"left",
-        resizable:false,
-        formatter:"money",
-        formatterParams:{ precision:0, thousandsSeparator:"," },
-        headerWordWrap:true,
-
+      { title: `Gold / ${CURRENCY.LOCAL}`, field:"gold_per_cost", hozAlign:"left", headerHozAlign:"left", resizable:false,
+        formatter:"money", formatterParams:{ precision:0, thousandsSeparator:"," }, headerWordWrap:true,
         titleFormatter: function(){
-          return `
-            <span class="tooltip-underline">
-              Gold / ${CURRENCY.LOCAL}
-            </span>
-          `;
+          return `<span class="tooltip-underline">Gold / ${CURRENCY.LOCAL}</span>`;
         },
         titleFormatterParams: { html: true },
-
         headerMouseEnter:function(e, column){
-          const html = `
-            <b>Note:</b><br>
-            Gold from sellable units per ${CURRENCY.LOCAL}.
-          `;
-
+          const html = `<b>Note:</b><br>Gold from sellable units per ${CURRENCY.LOCAL}.`;
           showTooltip(e.clientX, e.clientY, html);
         },
-
-        headerMouseMove:function(e){
-          moveTooltip(e.clientX, e.clientY);
-        },
-
-        headerMouseLeave:function(){
-          hideTooltip();
-        }
+        headerMouseMove:function(e){ moveTooltip(e.clientX, e.clientY); },
+        headerMouseLeave:function(){ hideTooltip(); }
       },
-      { title: `SUPER|brie+`,
-        field: "super_brie", 
-        hozAlign: "left", 
-        headerHozAlign: "left", 
-        resizable: false,
-        headerWordWrap: true,
-        titleFormatter: function(){
-          return `
-            <span class="tooltip-underline">
-              SUPER|brie+
-            </span>
-          `;
-        },
+      { title: `SUPER|brie+`, field:"super_brie", hozAlign:"left", headerHozAlign:"left", resizable:false, headerWordWrap:true,
+        titleFormatter: function(){ return `<span class="tooltip-underline">SUPER|brie+</span>`; },
         titleFormatterParams: { html: true },
-
         headerMouseEnter:function(e, column){
           const html = `
             <b>SUPER|brie+ Market Price: ${sb_price}g</b><br>
-            This shows the estimated value of the IAP in SUPER|brie+.<br><br>
+            This shows the value of the IAP in SUPER|brie+.<br><br>
             <b>Note:</b><br>
             • Based on the latest sale history.<br>
             • May not reflect actual worth.<br>
@@ -251,16 +211,64 @@ export async function renderTable(results){
           `;
           showTooltip(e.clientX, e.clientY, html);
         },
-
-        headerMouseMove:function(e){
-          moveTooltip(e.clientX, e.clientY);
-        },
-
-        headerMouseLeave:function(){
-          hideTooltip();
-        }
+        headerMouseMove:function(e){ moveTooltip(e.clientX, e.clientY); },
+        headerMouseLeave:function(){ hideTooltip(); }
       }
-    ],
-    height: "100%"
+    ]
+  });
+
+  table.on("tableBuilt", function(){
+      setupColumnToggle();
+
+      table.redraw(true);
+      table.off("tableBuilt");
   });
 }
+
+async function setupColumnToggle() {
+  const toggleContainer = document.querySelector("#columnToggle");
+  toggleContainer.innerHTML = ""; // clear old checkboxes
+
+  const { columnVisibility = {} } = await new Promise(resolve => {
+    chrome.storage.local.get(["columnVisibility"], resolve);
+  });
+
+  table.getColumns().forEach(col => {
+    const field = col.getField();
+
+    // Apply saved visibility to the column
+    if (columnVisibility[field] === false) {
+      col.hide();
+    } else {
+      col.show();
+    }
+
+    // Build UI checkbox
+    const label = document.createElement("label");
+    label.style.marginRight = "10px";
+    label.style.fontSize = "14px";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = columnVisibility[field] !== false;
+    checkbox.style.marginRight = "4px";
+
+    checkbox.addEventListener("change", () => {
+      checkbox.checked ? col.show() : col.hide();
+      table.redraw(true, true);
+
+      // Save state
+      const state = {};
+      table.getColumns().forEach(c => {
+        state[c.getField()] = c.isVisible();
+      });
+      chrome.storage.local.set({ columnVisibility: state });
+    });
+
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(col.getDefinition().title));
+    toggleContainer.appendChild(label);
+  });
+}
+
+
