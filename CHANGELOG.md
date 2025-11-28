@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## 🚀 v0.0.5 — 2025-11-28
 ### Added
-- Column filter panel to toggle visibility of selected columns.
+- Column filter to toggle visibility of specific columns.
 
 ---
 
@@ -29,7 +29,7 @@ All notable changes to this project will be documented in this file.
 
 ## 🚀 v0.0.0.2 — 2025-11-19
 ### Added
-- GitHub links added across the project.
+- Links in extension menu.
 - Widget visibility settings now persist between sessions.
 
 ---
