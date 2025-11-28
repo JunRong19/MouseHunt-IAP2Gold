@@ -28,6 +28,9 @@ Play MouseHunt [here](https://www.mousehuntgame.com/)
   Tooltip to show detailed breakdown of buy orders and sellable units.
 </p>
 
+## 📜 Changelog
+See the project history here: [CHANGELOG.md](./CHANGELOG.md)
+
 ## 📖 License
 
 This project is licensed under the **GNU General Public License v3.0 (GPLv3)**. See the [LICENSE](./LICENSE) file for full details.
