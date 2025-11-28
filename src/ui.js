@@ -1,4 +1,5 @@
 import { showTooltip, hideTooltip, moveTooltip } from "./tooltip.js";
+import { getSBPrice } from "./api.js";
 import { CURRENCY } from "./currency.js";
 
 export function createWidget(){
@@ -67,11 +68,14 @@ export function setupInteract(widget){
   return widget;
 }
 
-export function renderTable(results){
+export async function renderTable(results){
   const resultsDiv = document.querySelector("#mhResults");
   resultsDiv.innerHTML = "";
   
   if (!results.length){ resultsDiv.innerHTML = "<p>No market data found.</p>"; return; }
+
+  let sb_price = await getSBPrice();
+  sb_price = sb_price.toLocaleString();
 
   // IAPs data
   const tableData = results.map(r => ({
@@ -79,6 +83,7 @@ export function renderTable(results){
     name: r.name,
     cost: r.iap_cost,
     units: r.units,
+    super_brie: Math.floor(r.super_brie ?? 0),
     gold: r.gold,
     gold_per_cost: r.gold_per_cost,
 
@@ -209,6 +214,41 @@ export function renderTable(results){
             Gold from sellable units per ${CURRENCY.LOCAL}.
           `;
 
+          showTooltip(e.clientX, e.clientY, html);
+        },
+
+        headerMouseMove:function(e){
+          moveTooltip(e.clientX, e.clientY);
+        },
+
+        headerMouseLeave:function(){
+          hideTooltip();
+        }
+      },
+      { title: `SUPER|brie+`,
+        field: "super_brie", 
+        hozAlign: "left", 
+        headerHozAlign: "left", 
+        resizable: false,
+        headerWordWrap: true,
+        titleFormatter: function(){
+          return `
+            <span class="tooltip-underline">
+              SUPER|brie+
+            </span>
+          `;
+        },
+        titleFormatterParams: { html: true },
+
+        headerMouseEnter:function(e, column){
+          const html = `
+            <b>SUPER|brie+ Market Price: ${sb_price}g</b><br>
+            This shows the estimated value of the IAP in SUPER|brie+.<br><br>
+            <b>Note:</b><br>
+            • Based on the latest sale history.<br>
+            • May not reflect actual worth.<br>
+            • A value of 0 means there were no recent marketplace sales.
+          `;
           showTooltip(e.clientX, e.clientY, html);
         },
 

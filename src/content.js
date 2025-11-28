@@ -52,7 +52,7 @@ import { marketplaceCache, setDailyRates, fetchIAPs, parseIAPs, fetchMarketPrice
     results.sort((a,b) => b.gold_per_cost - a.gold_per_cost);
 
     // Display IAPs in table
-    renderTable(results);
+    await renderTable(results);
 
     // Re-enable button
     fetchBtn.textContent = "Fetch Market Data"; fetchBtn.disabled = false;
